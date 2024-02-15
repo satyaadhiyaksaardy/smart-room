@@ -21,8 +21,9 @@ tuya = tinytuya.Cloud(
 SWITCH_ID = os.getenv('THREE_SWITCH_ID')
 AIR_CONDITIONER_ID = os.getenv('AIR_CONDITIONER_ID')
 API_TOKEN = os.getenv('API_TOKEN')
-ir_ac_on_remote_code = os.getenv('IR_AC_ON_REMOTE_CODE')
-ir_ac_off_remote_code = os.getenv('IR_AC_OFF_REMOTE_CODE')
+REMOTE_ID = os.getenv('REMOTE_ID')
+REMOTE_CATEGORY_ID = os.getenv('REMOTE_CATEGORY_ID')
+REMOTE_INDEX = os.getenv('REMOTE_INDEX')
 
 # Endpoint for switch control
 @app.route('/switch/<int:button>', methods=['POST'])
@@ -38,6 +39,7 @@ def control_switch(button):
     state = data.get('state', False)  # Default to False if not specified
 
     commands = {"commands": [{"code": f"switch_{button}", "value": state}]}
+    print(commands)
 
     try:
         result = tuya.sendcommand(SWITCH_ID, commands)
@@ -60,27 +62,22 @@ def control_air_conditioner():
 
     # Map command name to IR codes
     ir_commands = {
-        "on": ir_ac_on_remote_code,
-        "off": ir_ac_off_remote_code
+        "on": "PowerOn",
+        "off": "PowerOff",
     }
 
-    if command_name in ir_commands:
-        # Prepare the IR command payload
-        ir_cmd = {
-            "control": "send_ir",
-            "head": "",
-            "key1": ir_commands[command_name],
-            "type": 0,
-            "delay": 300,
+    if command_name in ir_commands:    
+        post_data = {
+            "key": ir_commands[command_name],
+            "category_id": REMOTE_ID,
+            "remote_index": REMOTE_CATEGORY_ID
         }
-        # Wrap the IR command for Tuya API
-        commands = {"commands": [{"code": "ir_send", "value": json.dumps(ir_cmd)}]}
     else:
         return jsonify({'error': f"Unknown IR command: {command_name}"}), 400
 
     try:
         # Send the IR command through Tuya Cloud
-        result = tuya.sendcommand(AIR_CONDITIONER_ID, commands)
+        result = tuya.cloudrequest( '/v2.0/infrareds/%s/remotes/%s/command' % (AIR_CONDITIONER_ID, REMOTE_INDEX), post=post_data )
         return jsonify({'result': result}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
