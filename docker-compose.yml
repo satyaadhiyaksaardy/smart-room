@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - TUYA_API_REGION=us
+      - TUYA_API_KEY=your_api_key
+      - TUYA_API_SECRET=your_api_secret
+      - THREE_SWITCH_ID=your_three_switch_id
+      - AIR_CONDITIONER_ID=your_air_conditioner_id
+      - API_TOKEN=your_secure_token
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
