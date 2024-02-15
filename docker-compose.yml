@@ -11,6 +11,9 @@ services:
       - THREE_SWITCH_ID=your_three_switch_id
       - AIR_CONDITIONER_ID=your_air_conditioner_id
       - API_TOKEN=your_secure_token
+      - REMOTE_ID=your_remote_id
+      - REMOTE_CATEGORY_ID=your_remote_category_id
+      - REMOTE_INDEX=your_remote_index
     volumes:
       - .:/usr/src/app
     restart: unless-stopped
