@@ -69,15 +69,15 @@ def control_air_conditioner():
     if command_name in ir_commands:    
         post_data = {
             "key": ir_commands[command_name],
-            "category_id": REMOTE_ID,
-            "remote_index": REMOTE_CATEGORY_ID
+            "category_id": REMOTE_CATEGORY_ID,
+            "remote_index": REMOTE_INDEX
         }
     else:
         return jsonify({'error': f"Unknown IR command: {command_name}"}), 400
 
     try:
         # Send the IR command through Tuya Cloud
-        result = tuya.cloudrequest( '/v2.0/infrareds/%s/remotes/%s/command' % (AIR_CONDITIONER_ID, REMOTE_INDEX), post=post_data )
+        result = tuya.cloudrequest( '/v2.0/infrareds/%s/remotes/%s/command' % (AIR_CONDITIONER_ID, REMOTE_ID), post=post_data )
         return jsonify({'result': result}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
